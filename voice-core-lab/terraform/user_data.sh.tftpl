@@ -1,0 +1,12 @@
+#!/bin/bash
+# Runs once at first boot. Output goes to /var/log/cloud-init-output.log.
+set -euxo pipefail
+
+dnf install -y docker git
+systemctl enable --now docker
+
+git clone ${repo_url} /opt/voice-core-lab
+docker build -t kamailio-lab /opt/voice-core-lab/kamailio
+
+# Host networking keeps SIP simple: Kamailio binds directly to port 5060.
+docker run -d --name kamailio --restart unless-stopped --network host kamailio-lab

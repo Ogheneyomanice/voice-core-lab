@@ -1,0 +1,18 @@
+services:
+  kamailio:
+    build: ./kamailio
+    container_name: kamailio
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+
+  tests:
+    build: ./tests
+    depends_on:
+      - kamailio
+    environment:
+      TARGET: "${TARGET:-kamailio}"
+      PORT: "5060"
+      TESTS: "${TESTS:-options register call}"
+    volumes:
+      - ./results:/results
